@@ -1,4 +1,6 @@
 from string import ascii_lowercase
+from string import ascii_letters
+ascii_letters += " "
 
 from abc import ABC, abstractmethod
 from random import random, choice
@@ -35,6 +37,8 @@ class CasingPerturbation(Perturbation):
                     s+=sub.lower()
                 else:
                     s+=sub.upper()
+            else:
+                s+=sub
 
         return s
 
@@ -157,3 +161,51 @@ class LMPerturbation(Perturbation):
         s = self.tokenizer.decode(inputs.input_ids[0])
 
         return s.split(self.tokenizer.eos_token)[0]
+
+
+class PrependPerturbation(Perturbation):
+    def __init__(self, length, alphabet=ascii_letters):
+        self.alphabet=alphabet
+        self.length=length
+
+        self.appendix = " "
+        for i in range(self.length):
+            self.appendix+=choice(self.alphabet)
+        
+    def perturb(self, string, new_appendix=True):
+        self._check_string(string)
+
+        if self.length== 0:
+            return string
+
+        if new_appendix:
+
+            self.appendix = ""
+            for i in range(self.length):
+                self.appendix+=choice(self.alphabet)
+    
+        return f'{self.appendix} {string}'
+
+
+class AppendPerturbation(Perturbation):
+    def __init__(self, length, alphabet=ascii_letters):
+        self.alphabet=alphabet
+        self.length=length
+
+        self.appendix = " "
+        for i in range(self.length):
+            self.appendix+=choice(self.alphabet)
+        
+
+    def perturb(self, string, new_appendix=True):
+        self._check_string(string)
+
+        if self.length==0:
+            return string
+
+        if new_appendix:
+            self.appendix = " "
+            for i in range(self.length):
+                self.appendix+=choice(self.alphabet)
+    
+        return f'{string}{self.appendix}'
